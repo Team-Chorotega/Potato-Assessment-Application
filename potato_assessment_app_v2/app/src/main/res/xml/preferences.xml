@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="@string/pref_coin"
+        android:title="@string/pref_coin_title"
+        android:summary="@string/coin_type_summary"
+        android:entries="@array/pref_coin_type_preferences_and_values"
+        android:entryValues="@array/pref_coin_type_preferences_and_values"
+        android:defaultValue="@string/pref_coin_type_default"
+        />
+
+    <ListPreference
+        android:key="@string/pref_method"
+        android:title="@string/pref_method"
+        android:summary="@string/method_pref_summary"
+        android:entries="@array/pref_image_processing_type"
+        android:entryValues="@array/pref_image_processing_type_values"
+        android:defaultValue="@string/pref_processing_default"
+        />
+
+</PreferenceScreen>
