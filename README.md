@@ -1,15 +1,23 @@
 # Potato-Assessment-Application
 This application is being developed for Washington State University potato research and breeding programs. The application assesses potato tubers specified by the user via images.
 
-![plot](./test_images/title_img_dont_use.png) This application is being developed for Washington State University potato research and breeding programs. The application assesses potato tubers specified by the user via images.
-
-
+![plot](./test_images/title_img_dont_use.png)
 
 
 ## Current Features
+The left button is used to select an image from photos.
 
+The center button initiates the processing and analysis of the image.
+
+The right button resets the application.
+
+The options gear in the top right allows the user to select a reference object (Quarter, Dime, or None), and a processing method (Classic or Machine Learning).
 
 ## Future Plans
+User interface overhaul, storing of processed data, improvements to the image processing algorithms.
 
 
 ## User Instructions
+Currently the potatos must be set against a dark background with good lighting. 
+
+The reference object must be the left-most object in the image.
