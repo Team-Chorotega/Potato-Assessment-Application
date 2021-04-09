@@ -12,6 +12,7 @@ The center button initiates the processing and analysis of the image.
 The right button resets the application.
 
 The options gear in the top right allows the user to select a reference object (Quarter, Dime, or None), and a processing method (Classic or Machine Learning).
+* Note that if no reference object is used, the image processing will have difficulties with size thresholding and the data will be returned in units of pixels rather than centimeters.
 
 ## Future Plans
 User interface overhaul, storing of processed data, improvements to the image processing algorithms.
