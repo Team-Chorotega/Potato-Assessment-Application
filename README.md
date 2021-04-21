@@ -1,5 +1,5 @@
 # Potato-Assessment-Application
-*NOTE: THIS IS NOT UP TO DATE UPDATE WILL BE APPLIED WITHIN TWO DAYS. This application is being developed for Washington State University potato research and breeding programs. The application assesses potato tubers specified by the user via images.
+*NOTE: THIS IS NOT UP TO DATE, UPDATE WILL BE APPLIED WITHIN 2-3 DAYS. This application is being developed for Washington State University potato research and breeding programs. The application assesses potato tubers specified by the user via images.
 
 ![plot](./test_images/title_img_dont_use.png)
 
