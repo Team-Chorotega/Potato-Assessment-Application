@@ -14,4 +14,4 @@ Please see the TuberRuler_QuickGuide.pdf for more information on how to use the 
 * The python scripts and machine learning model can be found in the python folder of the application
 * The machine learning code and data used to develop the model can be found in the machine_learning folder
  
- *If working on the application please contact Alexander Glenn aglenn859@gmail.com*
+ *If working on the application or have further questions please contact ChorotegaPotatoAssessmentApp@gmail.com*
