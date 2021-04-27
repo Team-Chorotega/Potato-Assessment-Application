@@ -4,19 +4,16 @@ Created on Fri Apr  2 12:24:54 2021
 
 This script outputs 6 items in this order:
 
-1. array containing data for each potato in image (convert to java array using Chaquopy)
+1. array containing data for each potato in image
 2. number of potatoes (string)
 3. minimum l/w ratio (string)
 4. maximum l/w ratio (string)
 5. average l/w ratio (string)
-6. processed image (encoded as a string, decode using Chaquopy)
+6. processed image bitmap
 
 The main() function contains two input parameters: The encoded image from 
-Chaquopy and a string specifying the coin reference object being used. At this
-time the only options are "Quarter", "Dime", or "None". Measurements are in centimeters.
+Chaquopy and a string specifying the coin reference object being used. Measurements are in centimeters.
 If no reference object is used, the measurements will be returned in pixels.
-There is also a good chance it may not work well due to no size thresholding if
-no reference object is used.
 
             
 @author: Alex (alexander.glenn@wsu.edu)
