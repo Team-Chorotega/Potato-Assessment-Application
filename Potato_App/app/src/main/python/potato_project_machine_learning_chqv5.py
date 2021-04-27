@@ -342,12 +342,12 @@ def main(data, coin_string):
     #-----------------------------------------------------------
     """
     after data is collected, finalize what will be outputted:
-        1. array containing data for each potato in image (convert to java array using Chaquopy)
+        1. array containing data for each potato in image
         2. number of potatoes (string)
         3. minimum l/w ratio (string)
         4. maximum l/w ratio (string)
         5. average l/w ratio (string)
-        6. processed image (encoded as a string, decode using Chaquopy)
+        6. processed image
     """
     
     # check if arrays are empty
