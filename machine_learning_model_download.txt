@@ -1,1 +1,0 @@
-https://www.dropbox.com/s/ssuucbe788tvian/potato_model_40epoch_colab.h5?dl=0
