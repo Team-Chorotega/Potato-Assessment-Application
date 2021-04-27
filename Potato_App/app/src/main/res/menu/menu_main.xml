@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<!--This main menu controls the drawable settings button  -->
+    <!--I will likely come back and use this XML to add a button to access history-->
+    <item
+        android:id="@+id/action_history"
+        android:title="History"
+        android:icon="@drawable/ic_action_history"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_action_settings"
+        app:showAsAction="ifRoom" />
+
+</menu>

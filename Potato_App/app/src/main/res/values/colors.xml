@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="hill4">#255519</color>
+    <color name="hill3">#3d7e2d</color>
+    <color name="hill2">#73a965</color>
+    <color name="hill1">#197103</color>
+    <color name="sky">#66b4e0</color>
+    <color name="beige">#c4a577</color>
+    <color name="eggshel">#fef1a8</color>
+    <color name="drkeggshel">#f4e7a3</color>
+
+</resources>
