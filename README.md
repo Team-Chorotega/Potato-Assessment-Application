@@ -5,6 +5,8 @@ This application is being developed for Washington State University potato resea
 
 
 ## Current Features
+Please see the TuberRuler_QuickGuide.pdf for more information on how to use the application
+
 * The left button is used to select an image from photos.
 * The center button initiates the processing and analysis of the image.
 * The right button resets the application.
