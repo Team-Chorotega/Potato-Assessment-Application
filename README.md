@@ -21,3 +21,5 @@
 * The machine learning model must be downloaded using the link provided and put into the "python" folder of the application before use.
 * Currently the potatos must be set against a dark background with good lighting. 
 * The reference object must be the left-most object in the image.
+
+If working on the app please contact Alexander Glenn about licensing
