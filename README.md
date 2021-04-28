@@ -7,7 +7,7 @@ This application is being developed for Washington State University potato resea
 ## Current Features
 Please see the TuberRuler_QuickGuide.pdf for more information on how to use the application
 
-![plot](https://github.com/Team-Chorotega/Potato-Assessment-Application/blob/main/user_guide.png)
+![plot](https://github.com/Team-Chorotega/Potato-Assessment-Application/blob/main/test_images/user_guide.png)
 
 ## Development
 * This application uses Chaquopy (https://chaquo.com/chaquopy/) for the backend image processing in Python to interact with the frontend application written in Java
