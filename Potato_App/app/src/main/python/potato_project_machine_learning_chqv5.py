@@ -4,17 +4,20 @@ Created on Mon Apr  5 19:27:39 2021
 
 This script outputs 6 items in this order:
 
-1. array containing data for each potato in image
+1. array containing data for each potato in image (convert to java array using Chaquopy)
 2. number of potatoes (string)
 3. minimum l/w ratio (string)
 4. maximum l/w ratio (string)
 5. average l/w ratio (string)
-6. processed image bitmap
+6. processed image (encoded as a string, decode using Chaquopy)
 
-The main() function contains three input parameters: The image from 
-Chaquopy and a string specifying the coin reference object being used. 
-Measurements are in centimeters. If no reference object is used, the measurements
-will be returned in pixels.
+The main() function contains three input parameters: The encoded image from 
+Chaquopy and a string specifying the coin reference object being used. At this
+time the only options are "Quarter", "Dime", or "None". Measurements are in centimeters.
+If no reference object is used, the measurements will be returned in pixels.
+There is also a good chance it may not work well due to no size thresholding if
+no reference object is used.
+
 
 *This version uses a trained U-Net binary segmentation model for the binary
  thresholding of the image. It has proven to be much more accurate, but slower
@@ -55,6 +58,60 @@ def coin_type(string):
 
     return diameter
 
+def binary_threshold(output_img):
+    # turn into grayscale image
+    img_gray = cv2.cvtColor(output_img, cv2.COLOR_BGR2GRAY)
+    
+    # binary thresholding
+    blurred_img = cv2.GaussianBlur(img_gray, (3,3), 0)
+    
+    # need auto canny values and auto adaptive values:
+    v = np.median(blurred_img)
+    sigma = 0.33
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    
+    block_size = int(min(output_img.shape[0], output_img.shape[1])*0.4)
+    if(block_size % 2) == 0:
+        block_size = block_size+1
+    
+    # Find adaptive and normal threshold
+    adaptive_thresh = cv2.adaptiveThreshold(blurred_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, block_size,0)
+    ret, normal_thresh = cv2.threshold(blurred_img, 0, 255, cv2.THRESH_BINARY|cv2.THRESH_OTSU)
+    
+    # Find canny threshold
+    canny_thresh = cv2.Canny(img_gray, lower, upper)
+    
+    cnts = cv2.findContours(canny_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    cnts = imutils.grab_contours(cnts)
+    
+    copy = np.zeros_like(output_img)
+    
+    for c in cnts:
+        hull = cv2.convexHull(c) # Find convex hull of canny threshold
+        cv2.drawContours(copy, [hull], -1, (255,255,255), -1)
+    
+    contour_thresh = cv2.cvtColor(copy, cv2.COLOR_BGR2GRAY)
+    
+    # Multiply alll thresholds together
+    final_thresh = contour_thresh*normal_thresh*adaptive_thresh
+    
+    cnts = cv2.findContours(final_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    cnts = imutils.grab_contours(cnts)
+    
+    copy2 = np.zeros_like(output_img)
+    
+    # Find outer contour of final threshold
+    for c in cnts:
+        hull = cv2.convexHull(c)
+        cv2.drawContours(copy2, [hull], -1, (255,255,255), -1)
+    
+    new_final_thresh = cv2.cvtColor(copy2, cv2.COLOR_BGR2GRAY)
+    
+    return new_final_thresh
+
 def ref_obj_analysis(coin_string, ref_obj_thresh, markers):
     
     normalized_mask = cv2.normalize(markers, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
@@ -65,7 +122,7 @@ def ref_obj_analysis(coin_string, ref_obj_thresh, markers):
     
     left = (x, np.argmax(full_potato_mask[:,x])) # only want area left of potatoes
     
-    ref_obj_thresh = ref_obj_thresh[:,0:left[0]] # splice image
+    ref_obj_thresh = ref_obj_thresh[:,0:left[0]+100] # splice image
     
     kernel = np.ones((3,3), np.uint8)
     opening = cv2.morphologyEx(ref_obj_thresh, cv2.MORPH_OPEN, kernel, iterations = 1)
@@ -149,13 +206,8 @@ def main(data, coin_string):
     preprocessing before implementation of Watershed algorithm
     """
     
-    # turn into grayscale image
-    img_gray = cv2.cvtColor(output_img, cv2.COLOR_BGR2GRAY)
-    
     # binary thresholding
-    blurred_img = cv2.GaussianBlur(img_gray, (3,3), 0)
-    ret, ref_obj_thresh = cv2.threshold(blurred_img, 0, 255, 
-                                cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    ref_obj_thresh = binary_threshold(output_img)
     
     #-----------------------------------------------------------
     """
@@ -342,12 +394,12 @@ def main(data, coin_string):
     #-----------------------------------------------------------
     """
     after data is collected, finalize what will be outputted:
-        1. array containing data for each potato in image
+        1. array containing data for each potato in image (convert to java array using Chaquopy)
         2. number of potatoes (string)
         3. minimum l/w ratio (string)
         4. maximum l/w ratio (string)
         5. average l/w ratio (string)
-        6. processed image
+        6. processed image (encoded as a string, decode using Chaquopy)
     """
     
     # check if arrays are empty
