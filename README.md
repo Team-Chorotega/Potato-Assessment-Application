@@ -1,5 +1,5 @@
 # Potato Assessment Application
-This application is being developed for Washington State University potato research and breeding programs. The application assesses potato tubers specified by the user via images. 
+This application is being developed for Washington State University Phenomics Lab. The application assesses potato tubers specified by the user via images. 
 
 ![plot](https://github.com/Team-Chorotega/Potato-Assessment-Application/blob/main/Chorotega%20Senior%20Design%20Poster.png)
 
