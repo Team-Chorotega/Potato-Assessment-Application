@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +19,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.renderscript.Sampler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -40,57 +40,25 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.preference.Preference;
+import androidx.core.view.WindowCompat;
 import androidx.preference.PreferenceManager;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.CAMERA;
-
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-
 
 
 //implements SharedPreferences.OnSharedPreferenceChangeListener was suggested but gave errors
@@ -102,6 +70,8 @@ public class MainActivity extends AppCompatActivity  {
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
+    private final Map<Integer, PermissionCallback> permissionCallbacks = new HashMap<>(); // Store callbacks for each request
+
     android.widget.ImageButton btn, btnPick, rstBtn, photoButton;
     android.widget.ImageView iv, iv2;
     android.widget.TextView text1, text2, text3, text4;
@@ -111,9 +81,15 @@ public class MainActivity extends AppCompatActivity  {
     String imageString="";
     Uri imageUri;
 
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.activity_main);
 
         //tool bar is generated in tool_bar.xml and is the bar at the top of both screens
@@ -134,31 +110,17 @@ public class MainActivity extends AppCompatActivity  {
         btn = findViewById(R.id.button);
         iv = findViewById(R.id.imageView);
         iv2 = findViewById(R.id.imageView2);
-        photoButton = (ImageButton)findViewById(R.id.btnCamera);
-//        text1 = findViewById(R.id.num);
-//        text2 = findViewById(R.id.min);
-//        text3 = findViewById(R.id.max);
+        photoButton = findViewById(R.id.btnCamera);
         text4 = findViewById(R.id.avg);
         ContentValues values = new ContentValues();
 
-
-        //Check for camera permissions
+//Check for camera permissions
         if (ContextCompat.checkSelfPermission(MainActivity.this, CAMERA) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]
                             {
                                     Manifest.permission.CAMERA
-                            }, 100);
-        }
-
-        //Check for external storage
-        if (ContextCompat.checkSelfPermission(MainActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]
-                            {
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                             }, 100);
         }
 
@@ -185,7 +147,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setType("image/");
+                intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Pick an image"), GALLERY_REQUEST_CODE);
 
@@ -211,18 +173,24 @@ public class MainActivity extends AppCompatActivity  {
         SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);//pulls the info from settings
 
 
-
+        // Go button listener
         btn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)//added for the datastorage call
             @Override
             public void onClick(View v) {
-                toast.show();
-
                 drawable = (BitmapDrawable)iv.getDrawable();
+
+                // Return if there is no image to analyze
+                if (imageUri == null && drawable == null) {
+                    Toast.makeText(context, "Select an image", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                toast.show();
                 Bitmap bitmap = Bitmap.createBitmap(drawable.getBitmap());
 
                 String coinType=sharedPreferences.getString("Coin_Type","Quarter");//The settings are pulled on process run
-                String processType=sharedPreferences.getString("Processing_Method", "Normal");
+                String processType=sharedPreferences.getString("Processing_Method", "Machine_Learning");
                 String customSize=sharedPreferences.getString("Custom_Coin", "0");
                 String customPass="Custom_"+customSize;
 
@@ -236,14 +204,13 @@ public class MainActivity extends AppCompatActivity  {
                 Log.v("CUSTOM", "Custom Pass: "+customPass);
                 PyObject pyo;
 
-                if(processType.equals("Normal")){
-                    Log.v("PROCESS", "Running Classic Method");
-                    pyo = py.getModule("potato_project_classic_chqv4");
-
-                }
-                else{
+                if(processType.equals("Machine_Learning")){
                     Log.v("PROCESS", "Running Machine Learning");
                     pyo = py.getModule("potato_project_machine_learning_chqv5");
+                }
+                else{
+                    Log.v("PROCESS", "Running Classic Method");
+                    pyo = py.getModule("potato_project_classic_chqv4");
                 }
 
                 List<PyObject> obj;
@@ -253,7 +220,16 @@ public class MainActivity extends AppCompatActivity  {
                 else {
                     obj = pyo.callAttr("main", imageBytes, coinType).asList();
                 }
-                Float dataValues[][]=obj.get(0).toJava(Float[][].class);
+
+                // If there is no data, show an error and return
+                Float dataValues[][];
+                try {
+                    dataValues = obj.get(0).toJava(Float[][].class);
+                } catch(Exception e) {
+                    Toast.makeText(context, "No Tubers Detected", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 String taterNum = obj.get(1).toJava(String.class);
                 String minRatio = obj.get(2).toJava(String.class);
                 String maxRatio = obj.get(3).toJava(String.class);
@@ -402,6 +378,36 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+
+    private void requestPermission(String permission, int requestCode, PermissionCallback callback) {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]
+                        {
+                                permission
+                        }, requestCode);
+        permissionCallbacks.put(requestCode, callback); // Store callback for later use
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionCallback callback = permissionCallbacks.remove(requestCode); // Remove used callback
+        if (callback != null) {
+            // Permission request for storage access
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with storage operations
+                callback.onPermissionGranted();
+            } else {
+                // Permission denied, handle user rejection
+                callback.onPermissionDenied();
+            }
+        } else if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+             if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+                Toast.makeText(MainActivity.this, "Camera permission is required to take pictures", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     //This generates the little bubble when the settings button is pushed
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -443,7 +449,7 @@ public class MainActivity extends AppCompatActivity  {
             iv.setImageURI(imageData);
         }
         //added for camera functionality
-        else if(requestCode == 100 && resultCode == RESULT_OK && data != null)
+        else if(requestCode == 100 && resultCode == RESULT_OK && imageUri != null)
         {
             switch (requestCode) {
 
@@ -491,7 +497,7 @@ public class MainActivity extends AppCompatActivity  {
         Context context=this;
         String root =context.getFilesDir().toString();
         //attempting to use local storage!
-        File myDir = new File(root+"/saved_images");
+        File myDir = new File(context.getFilesDir(),"saved_images");
 
         Log.v("ROOT", "The root is:"+root);
         Log.v("PATH", "Full directory path:"+myDir);
@@ -504,7 +510,6 @@ public class MainActivity extends AppCompatActivity  {
         }
         //use dateString for the names
         String fileName= dateString+".jpg";
-        //String fileName=dateString;
         Log.v("NAME", "StoreImage named file: "+fileName);
         File file = new File(myDir, fileName);
         Log.v("FILE", "File made");
@@ -535,7 +540,7 @@ public class MainActivity extends AppCompatActivity  {
 
         Context context=this;
         String root =context.getFilesDir().toString();
-        File myDir = new File(root+"/saved_data");
+        File myDir = new File(context.getFilesDir(),"saved_data");
         //directory is now "root"/saved_data, wherever app file storage is
 
         Log.v("DATA", "File to be saved in: "+myDir);
@@ -544,9 +549,13 @@ public class MainActivity extends AppCompatActivity  {
         Log.v("DATA", "File Name: "+fileName);
 
         File file = new File(myDir,fileName);
-        File userFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath(),fileName);//this file should be the one that is written out so the user can access it
-        //The aboveline throws a fit about the API, ignore this for now
 
+        // Find the user store
+        File userDocs = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File userFile = new File(userDocs, fileName);
+
+        // Ensure the user writable location exists
+        userFile.mkdirs();
 
         if(file.exists()){file.delete();}//we will likely implement some sort of duplication in the future, for now lets just erase old stuff
         if(userFile.exists()){userFile.delete();}
@@ -558,6 +567,7 @@ public class MainActivity extends AppCompatActivity  {
             FileWriter out = new FileWriter(file);
             out.write(numTater+newLine+minRatio+newLine+maxRatio+newLine+avgRatio+newLine+coinType+newLine);
             //FileOutputStream fos =new FileOutputStream(userFile); gonna try filewriter first
+
             FileWriter userOut=new FileWriter(userFile);
             userOut.write(numTater+newLine+minRatio+newLine+maxRatio+newLine+avgRatio+newLine+coinType+newLine);
 
@@ -620,6 +630,13 @@ public class MainActivity extends AppCompatActivity  {
     //https://stackoverflow.com/questions/41952535/saving-image-from-image-view-into-internal-external-device-storage
     public  boolean isStoragePermissionGranted() {
         if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+            /*
+              Since we are saving in app's internal storage, no permission is required
+             */
+            return true;
+
+            /*
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("PERM","Permission is granted");
@@ -631,6 +648,7 @@ public class MainActivity extends AppCompatActivity  {
                 //  getActivity() throws an error, commenting this out for now
                 return false;
             }
+            */
         }
         else { //permission is automatically granted on sdk<23 upon installation
             Log.v("PERM","Permission is granted for sdk<23");

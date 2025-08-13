@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar
+<com.chorotega_potato_assessment_app.helper.InsetToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:background="@color/hill3"
@@ -7,4 +7,4 @@
     >
     <!--I moved control over the toolbar to this file instead of the themes.xml-->
     <!--This should allow for finer control, even removing it from certain pages we dont want it on-->
-</androidx.appcompat.widget.Toolbar>
+</com.chorotega_potato_assessment_app.helper.InsetToolbar>

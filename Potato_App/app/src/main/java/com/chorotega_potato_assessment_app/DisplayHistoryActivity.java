@@ -2,8 +2,8 @@ package com.chorotega_potato_assessment_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowCompat;
 
-import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,12 +15,8 @@ import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 public class DisplayHistoryActivity extends AppCompatActivity {
     //this activity controls displaying the full image and the table to the user
@@ -34,6 +30,7 @@ public class DisplayHistoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_display_history);
 
         ////////////////////////////////////
@@ -54,9 +51,9 @@ public class DisplayHistoryActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("History: "+ neutralName);
         String root =this.getFilesDir().toString();
         File imageDir = new File(root+"/saved_images");
-        File dataDir= new File(root+"/saved_data");
         File imageFile=new File(imageDir,imageName);
-        File dataFile=new File(dataDir,dataName);
+        File dataDir = new File(root+"/saved_data");
+        File dataFile = new File(dataDir, dataName);
 
         imageView.setImageURI(Uri.fromFile(imageFile));
 
@@ -137,7 +134,7 @@ public class DisplayHistoryActivity extends AppCompatActivity {
             BufferedReader reader = new BufferedReader(new FileReader(dataFile));
             String line = reader.readLine();
             String numTubers=line;
-            TableRow[] tr_tater = new TableRow[Integer.parseInt(numTubers)];//How many rows
+            TableRow[] tr_tater = new TableRow[(int)Double.parseDouble(numTubers.trim())];//How many rows
 
 
             while(line!=null){

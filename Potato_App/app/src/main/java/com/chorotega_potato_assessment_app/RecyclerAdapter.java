@@ -4,7 +4,6 @@ package com.chorotega_potato_assessment_app;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.List;
 
 //https://www.learningsomethingnew.com/how-to-use-a-recycler-view-to-show-images-from-storage
@@ -43,10 +41,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-       /* TextView textView= (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view_layout,parent,false);
-        MyViewHolder myViewHolder=new MyViewHolder(textView);
-        return myViewHolder;*/
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout,parent,false);
         ImageViewHolder imageViewHolder=new ImageViewHolder(view, context, list);//originally just view was used
     return imageViewHolder;

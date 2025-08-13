@@ -26,29 +26,29 @@
     </string-array>
 
     <string-array name="pref_image_processing_type">
-        <item>Standard Image Processing</item>
         <item>Machine Learning</item>
+        <item>Standard Image Processing</item>
     </string-array>
 
     <string-array name="pref_image_processing_type_values">
-        <item>Normal</item>
         <item>Machine_Learning</item>
+        <item>Normal</item>
     </string-array>
 
     <string name="pref_coin_type_default">Quarter</string>
-    <string name="pref_processing_default">Normal</string>
+    <string name="pref_processing_default">Machine_Learning</string>
 
     <string name="pref_coin">Coin_Type</string>
     <string name="pref_coin_title">Reference Object</string>
     <string name="pref_method">Processing_Method</string>
-    <string name="pref_method_title">Processing Method</string>
-    <string name="coin_type_summary">This option allows you to change the coin you want to use</string>
-    <string name="method_pref_summary">This option lets you use classic or machine learning processing methods</string>
+    <string name="pref_method_title">Processing Approach</string>
+    <string name="coin_type_summary">This option allows the user to utilized preferred reference object</string>
+    <string name="method_pref_summary">This allows the user to use standard or machine learning-based image processing technique for background segmentation</string>
 
 
-    <string name="pref_custom_coin_title">Custom Coin Size (cm)</string>
+    <string name="pref_custom_coin_title">Reference Object Size (cm)</string>
     <string name="pref_custom_coin_key">Custom_Coin</string>
-    <string name="pref_custom_coin_summary">This field is used for when a custom coin is selected. Please put size in cm and only use numbers.</string>
+    <string name="pref_custom_coin_summary">If ‘Custom’ option is selected in ‘Reference Object’, please enter diameter dimensions in cm. </string>
 
 
 </resources>
